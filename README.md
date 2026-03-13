@@ -19,7 +19,7 @@
 
 传统的单次调用方式让 LLM 一步给出答案，在复杂数学题上常常力不从心。本项目的核心思路是：**将完整的推理过程拆分为多个独立的迭代步骤**，每一步由同一个 LLM 扮演不同角色（思考智能体 / 摘要智能体 / 答案智能体）完成单一操作，并通过**摘要（Summary）机制压缩上下文**，使得每一步的推理都能在有限的上下文窗口内高效进行。
 
-> 详细介绍可参阅项目中的 `总结报告.pdf` 和 `实验记录.docx`。
+> 详细介绍可参阅项目中的 `docs/总结报告.pdf` 和 `docs/实验记录.docx`。
 
 ---
 
@@ -96,6 +96,21 @@
 
 ```
 .
+├── analysis/                      # 分析脚本、日志与根目录实验结果
+│   ├── completion_tokens_analysis.py  # Token 使用量分析脚本
+│   ├── getdata.py                 # 迭代步数直方图生成脚本
+│   ├── final_summary.log          # 分析汇总日志
+│   └── multi_metrics*.json        # 多智能体实验结果（根目录原始汇总）
+├── assets/
+│   └── images/                    # 项目图片资源
+│       ├── UI.png                 # App 界面示意图
+│       ├── ittrue.png             # 实验结果图
+│       ├── iteration_steps_histogram.png
+│       └── completion_tokens_histogram*.png
+├── docs/                          # 项目文档资料
+│   ├── poster (1).pptx            # 项目展示海报
+│   ├── 实验记录.docx               # 详细实验记录
+│   └── 总结报告.pdf                # 项目总结报告
 ├── math/                          # 核心实验代码目录
 │   ├── process.py                 # 多智能体迭代推理主程序（基础版）
 │   ├── process2.py                # 改进版（新增 FLOPs 统计）
@@ -112,19 +127,7 @@
 │   │   ├── difficulty_4.json      # 难度4（137题）
 │   │   └── difficulty_5.json      # 难度5（146题，主要评测集）
 │   └── result/                    # 实验结果（JSON 格式）
-├── completion_tokens_analysis.py  # Token 使用量分析脚本
-├── getdata.py                     # 迭代步数直方图生成脚本
-├── multi_metrics_*.json           # 多智能体实验结果
-├── multi_metrics22_2.json         # 最大迭代=22 的实验结果
-├── multi_metrics30_2.json         # 最大迭代=30 的实验结果
-├── multi_metrics50_1.json         # 最大迭代=50 的实验结果
-├── multi_metrics5_4.json          # token 限制=5 的实验结果
-├── iteration_steps_histogram.png  # 迭代步数分布直方图
-├── completion_tokens_histogram*.png # Token 使用量分布直方图
-├── ittrue.png                     # 实验结果图
-├── 实验记录.docx                   # 详细实验记录
-├── 总结报告.pdf                    # 项目总结报告
-└── poster (1).pptx                # 项目展示海报
+└── README.md
 ```
 
 ---
@@ -160,7 +163,7 @@
 
 下图展示了正确回答问题的迭代步数分布（仅统计正确答案）：
 
-![迭代步数分布](iteration_steps_histogram.png)
+![迭代步数分布](assets/images/iteration_steps_histogram.png)
 
 ### Completion Tokens 分布分析
 
@@ -168,9 +171,9 @@
 
 | 分析维度                | 直方图                                                          |
 | ----------------------- | --------------------------------------------------------------- |
-| 全部类型（排除 answer） | ![所有类型](completion_tokens_histogram_all_excluding_answer.png) |
-| 思考阶段（thinking）    | ![思考阶段](completion_tokens_histogram_thinking.png)             |
-| 摘要阶段（summary）     | ![摘要阶段](completion_tokens_histogram_summary.png)              |
+| 全部类型（排除 answer） | ![所有类型](assets/images/completion_tokens_histogram_all_excluding_answer.png) |
+| 思考阶段（thinking）    | ![思考阶段](assets/images/completion_tokens_histogram_thinking.png)             |
+| 摘要阶段（summary）     | ![摘要阶段](assets/images/completion_tokens_histogram_summary.png)              |
 
 ---
 
@@ -196,10 +199,10 @@ python process3.py
 
 ```bash
 # 分析迭代步数分布
-python getdata.py
+python analysis/getdata.py
 
 # 分析 Token 使用量
-python completion_tokens_analysis.py
+python analysis/completion_tokens_analysis.py
 ```
 
 ### 系统提示词格式
@@ -230,14 +233,47 @@ python completion_tokens_analysis.py
 
 | 文件名                         | 说明                                                                                    |
 | ------------------------------ | --------------------------------------------------------------------------------------- |
-| `multi_metrics_5.json`       | 早期无限制tokens，100题，主要用于寻找最适截断参数                                       |
-| `multi_metrics_6.json`       | **最优多步方法结果**（步数=22，合理Token截断），准确率76.03%，FLOPs为 347,372,174 |
-| `multi_metrics30_2.json`     | 最大30步迭代，146题，准确率65.07%                                                       |
-| `multi_metrics50_1.json`     | 最大50步迭代，146题，准确率60.96%                                                       |
-| `multi_metrics22_2.json`     | 初步最大22步迭代，146题，准确率73.97%                                                   |
-| `multi_metrics5_4.json`      | 最大5步迭代，146题，准确率52.05%                                                        |
+| `analysis/multi_metrics_5.json`       | 早期无限制tokens，100题，主要用于寻找最适截断参数                                       |
+| `analysis/multi_metrics_6.json`       | **最优多步方法结果**（步数=22，合理Token截断），准确率76.03%，FLOPs为 347,372,174 |
+| `analysis/multi_metrics30_2.json`     | 最大30步迭代，146题，准确率65.07%                                                       |
+| `analysis/multi_metrics50_1.json`     | 最大50步迭代，146题，准确率60.96%                                                       |
+| `analysis/multi_metrics22_2.json`     | 初步最大22步迭代，146题，准确率73.97%                                                   |
+| `analysis/multi_metrics5_4.json`      | 最大5步迭代，146题，准确率52.05%                                                        |
 | `math/single_metrics_4.json` | 单步基线，146题，**准确率76.71%**，FLOPs为 651,039,582                            |
 
+---
+
+## 🧩 App 目录使用说明
+
+`app/the-app` 目录下提供了 GUI 版本原型：
+
+- `app.py`：包含登录页面与主界面切换逻辑。
+- `app2.py`：包含聊天界面与多轮调用逻辑。
+
+![UI](assets/images/UI.png)
+
+### 登录信息（原始账号密码）
+
+在 `app/the-app/app.py` 的登录校验中，默认凭据为：
+
+- **用户名**：`dais`
+- **密码**：`123456`
+
+### API 密钥配置（app2）
+
+在 `app/the-app/app2.py` 的 `send_message` 方法中，默认是：
+
+```python
+api_key = ""
+```
+
+使用前请将其替换为你自己的 API 密钥，否则 `app2` 无法正常调用模型接口。
+
+可在 `app/the-app` 目录运行：
+
+```bash
+python app.py
+```
 ---
 
 ## 📄 参考资料
@@ -249,5 +285,5 @@ python completion_tokens_analysis.py
 ---
 
 <p align="center">
-  如需详细了解实验设计与分析，请参阅 <code>总结报告.pdf</code> 和 <code>实验记录.docx</code>
+  如需详细了解实验设计与分析，请参阅 <code>docs/总结报告.pdf</code> 和 <code>docs/实验记录.docx</code>
 </p>

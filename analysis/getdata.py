@@ -2,12 +2,16 @@ import json
 import numpy as np
 import matplotlib.pyplot as plt
 from collections import defaultdict
+from pathlib import Path
 
 # 设置中文字体显示
 import matplotlib
 matplotlib.rcParams['font.family'] = ['sans-serif']
 matplotlib.rcParams['font.sans-serif'] = ['SimHei', 'Microsoft YaHei', 'Arial Unicode MS', 'DejaVu Sans']
 matplotlib.rcParams['axes.unicode_minus'] = False  # 用来正常显示负号
+
+BASE_DIR = Path(__file__).resolve().parent
+IMAGE_DIR = BASE_DIR.parent / 'assets' / 'images'
 
 def load_data(file_path):
     """加载JSON数据文件"""
@@ -181,12 +185,14 @@ def plot_histogram(frequency, bin_width=5, iteration_steps=None):
     plt.show()
     
     # 保存图形
-    fig.savefig('iteration_steps_histogram.png', dpi=300, bbox_inches='tight')
-    print("直方图已保存为 'iteration_steps_histogram.png'")
+    IMAGE_DIR.mkdir(parents=True, exist_ok=True)
+    output_path = IMAGE_DIR / 'iteration_steps_histogram.png'
+    fig.savefig(output_path, dpi=300, bbox_inches='tight')
+    print(f"直方图已保存为 '{output_path}'")
 
 def main():
     # 数据文件路径（请根据实际情况修改）
-    file_path = 'multi_metrics_1.json'
+    file_path = BASE_DIR / 'multi_metrics_6.json'
     
     # 加载数据
     data = load_data(file_path)
