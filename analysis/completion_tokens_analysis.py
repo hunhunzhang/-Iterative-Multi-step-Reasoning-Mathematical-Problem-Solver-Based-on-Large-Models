@@ -2,12 +2,16 @@ import json
 import numpy as np
 import matplotlib.pyplot as plt
 from collections import defaultdict
+from pathlib import Path
 
 # 设置中文字体显示
 import matplotlib
 matplotlib.rcParams['font.family'] = ['sans-serif']
 matplotlib.rcParams['font.sans-serif'] = ['SimHei', 'Microsoft YaHei', 'Arial Unicode MS', 'DejaVu Sans']
 matplotlib.rcParams['axes.unicode_minus'] = False  # 用来正常显示负号
+
+BASE_DIR = Path(__file__).resolve().parent
+IMAGE_DIR = BASE_DIR.parent / 'assets' / 'images'
 
 def load_data(file_path):
     """加载JSON数据文件"""
@@ -220,8 +224,10 @@ def plot_histogram(frequency, bin_width=50, completion_tokens_list=None, respons
     
     # 保存图形
     filename = f'completion_tokens_histogram_{response_type.lower().replace(" ", "_").replace("(", "").replace(")", "")}.png'
-    fig.savefig(filename, dpi=300, bbox_inches='tight')
-    print(f"直方图已保存为 '{filename}'")
+    IMAGE_DIR.mkdir(parents=True, exist_ok=True)
+    output_path = IMAGE_DIR / filename
+    fig.savefig(output_path, dpi=300, bbox_inches='tight')
+    print(f"直方图已保存为 '{output_path}'")
 
 def analyze_and_plot(data, response_type_filter=None, response_type_name="All (Excluding Answer)"):
     """分析并绘制特定类型的completion_tokens直方图"""
@@ -260,7 +266,7 @@ def analyze_and_plot(data, response_type_filter=None, response_type_name="All (E
 
 def main():
     # 数据文件路径（请根据实际情况修改）
-    file_path = 'multi_metrics_5.json'
+    file_path = BASE_DIR / 'multi_metrics_5.json'
     
     # 加载数据
     data = load_data(file_path)

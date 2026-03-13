@@ -287,7 +287,7 @@ token最大长度限制：{50}
 
         self.append_message("DeepSeek", "<i>正在思考中...</i>")
         
-        api_key = "sk-EEQLw6Rp2J64TGqc056fF8F3D3A748A8B28dC6C6DdDc33A2"
+        api_key = ""
         base_url = "https://api.bltcy.ai/v1/chat/completions"
 
         self.llm_service.start_iterative_response(
